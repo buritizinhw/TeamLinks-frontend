@@ -1,0 +1,55 @@
+<app-page-header title="Projects">
+  <button action class="btn btn-primary" (click)="openCreate()">
+    + Novo Projeto
+  </button>
+</app-page-header>
+
+<div class="page-body">
+  <!-- Search -->
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      class="form-input"
+      [(ngModel)]="search"
+      placeholder="Buscar projetos..."
+    />
+  </div>
+
+  <!-- Grid -->
+  @if (filtered.length > 0) {
+    <div class="projects-grid">
+      @for (project of filtered; track project.id) {
+        <app-project-card
+          [project]="project"
+          (edit)="openEdit($event)"
+          (delete)="openDelete($event)"
+        ></app-project-card>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>{{ search ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.' }}</p>
+      @if (!search) {
+        <button class="btn btn-secondary" (click)="openCreate()">
+          + Criar primeiro projeto
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modals -->
+<app-project-modal
+  [open]="modalOpen"
+  [project]="editingProject"
+  (openChange)="modalOpen = $event"
+  (save)="onSave($event)"
+></app-project-modal>
+
+<app-confirm-delete-dialog
+  [open]="deleteDialogOpen"
+  [title]="'Excluir projeto'"
+  [description]="'Tem certeza que deseja excluir ' + (projectToDelete?.name ?? '') + '? Todos os links serão removidos.'"
+  (openChange)="deleteDialogOpen = $event"
+  (confirm)="onConfirmDelete()"
+></app-confirm-delete-dialog>
