@@ -1,1 +1,225 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --background: #F5F5F5;
+  --foreground: #0A0A0A;
+  --surface: #FFFFFF;
+  --elevated: #F0F0F0;
+  --border: #E0E0E0;
+  --input-bg: #FFFFFF;
+  --text-primary: #0A0A0A;
+  --text-secondary: #6B6B6B;
+  --text-muted: #AAAAAA;
+  --primary: #FF3D00;
+  --primary-foreground: #FFFFFF;
+  --accent-subtle: rgba(255, 61, 0, 0.08);
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E0E0E0;
+  --radius: 8px;
+  --transition: 150ms ease;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #FFFFFF;
+  --surface: #1A1A1A;
+  --elevated: #242424;
+  --border: #2E2E2E;
+  --input-bg: #242424;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-muted: #5A5A5A;
+  --primary: #FF3D00;
+  --primary-foreground: #FFFFFF;
+  --accent-subtle: rgba(255, 61, 0, 0.10);
+  --sidebar-bg: #111111;
+  --sidebar-border: #2E2E2E;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &.btn-primary {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+    &:hover:not(:disabled) { filter: brightness(0.9); }
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var(--border);
+    &:hover:not(:disabled) { background: var(--elevated); }
+  }
+
+  &.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+    &:hover:not(:disabled) { background: var(--elevated); color: var(--text-primary); }
+  }
+
+  &.btn-danger {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    &:hover:not(:disabled) { filter: brightness(0.9); }
+  }
+
+  &.btn-icon {
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  .required { color: var(--primary); }
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+
+  &::placeholder { color: var(--text-muted); }
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--accent-subtle);
+  }
+}
+
+.form-textarea { resize: none; min-height: 80px; }
+
+.tl-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr { background: var(--elevated); }
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th { color: var(--text-secondary); font-weight: 500; }
+  td { color: var(--text-primary); }
+
+  tbody tr {
+    &:hover { background: color-mix(in srgb, var(--elevated) 50%, transparent); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.tl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.tl-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid;
+
+  &.badge-accent {
+    background: var(--accent-subtle);
+    color: var(--primary);
+    border-color: transparent;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 448px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .modal-body {
+    display: flex;
+  }
+}
