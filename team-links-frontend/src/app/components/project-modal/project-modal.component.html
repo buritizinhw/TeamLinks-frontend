@@ -1,0 +1,46 @@
+@if (open) {
+  <div class="modal-overlay" (click)="close()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ project ? 'Editar Projeto' : 'Novo Projeto' }}</h2>
+      </div>
+
+      <form class="modal-body" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label">
+            Nome <span class="required">*</span>
+          </label>
+          <input
+            class="form-input"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Nome do projeto"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <textarea
+            class="form-textarea"
+            [(ngModel)]="description"
+            name="description"
+            placeholder="Descrição do projeto"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="close()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Salvar
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}
