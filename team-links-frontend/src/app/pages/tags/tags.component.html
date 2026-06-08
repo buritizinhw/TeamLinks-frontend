@@ -1,0 +1,64 @@
+<app-page-header title="Tags">
+  <button action class="btn btn-primary" (click)="openCreate()">
+    + Nova Tag
+  </button>
+</app-page-header>
+
+<div class="page-body">
+  <div class="tl-card">
+    @if (tags.length > 0) {
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Preview</th>
+            <th style="width:100px">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tag of tags; track tag.id) {
+            <tr>
+              <td>{{ tag.name }}</td>
+              <td>
+                <app-tag-badge [tag]="tag"></app-tag-badge>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn btn-ghost btn-icon" (click)="openEdit(tag)" title="Editar">
+                    ✏️
+                  </button>
+                  <button class="btn btn-ghost btn-icon danger" (click)="openDelete(tag)" title="Excluir">
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="empty-state">
+        <p>Nenhuma tag cadastrada.</p>
+        <button class="btn btn-secondary" (click)="openCreate()">
+          + Criar primeira tag
+        </button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modals -->
+<app-tag-modal
+  [open]="modalOpen"
+  [tag]="editingTag"
+  (openChange)="modalOpen = $event"
+  (save)="onSave($event)"
+></app-tag-modal>
+
+<app-confirm-delete-dialog
+  [open]="deleteDialogOpen"
+  [title]="'Excluir tag'"
+  [description]="'Tem certeza que deseja excluir a tag ' + (tagToDelete?.name ?? '') + '?'"
+  (openChange)="deleteDialogOpen = $event"
+  (confirm)="onConfirmDelete()"
+></app-confirm-delete-dialog>

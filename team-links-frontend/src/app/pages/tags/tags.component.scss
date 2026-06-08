@@ -1,0 +1,13 @@
+.page-body {
+  padding: 24px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 2px;
+
+  .danger:hover {
+    color: var(--primary) !important;
+    background: var(--accent-subtle) !important;
+  }
+}
