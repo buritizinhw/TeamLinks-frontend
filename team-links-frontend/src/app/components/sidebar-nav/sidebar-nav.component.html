@@ -1,0 +1,18 @@
+<aside class="sidebar">
+  <div class="sidebar-inner">
+    <div class="sidebar-logo">
+      <a routerLink="/projects" class="logo-text">
+        teamlinks<span class="logo-dot">.</span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.href) {
+        <a [routerLink]="item.href" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  </div>
+</aside>
