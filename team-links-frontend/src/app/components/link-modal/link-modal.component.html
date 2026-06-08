@@ -1,0 +1,86 @@
+@if (open) {
+  <div class="modal-overlay" (click)="close()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ link ? 'Editar Link' : 'Novo Link' }}</h2>
+      </div>
+
+      <form class="modal-body" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label">
+            Título <span class="required">*</span>
+          </label>
+          <input
+            class="form-input"
+            [(ngModel)]="title"
+            name="title"
+            placeholder="Título do link"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            URL <span class="required">*</span>
+          </label>
+          <input
+            class="form-input"
+            type="url"
+            [(ngModel)]="url"
+            name="url"
+            placeholder="https://exemplo.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tag-dropdown">
+            <button
+              type="button"
+              class="tag-trigger"
+              [class.placeholder]="!selectedTagIds.length"
+              (click)="toggleTagMenu()"
+            >
+              <span>{{ triggerLabel || 'Selecionar tags...' }}</span>
+              <span>⌄</span>
+            </button>
+
+            @if (tagMenuOpen) {
+              <div class="tag-menu">
+                @for (tag of availableTags; track tag.id) {
+                  <div class="tag-option" (click)="toggleTag(tag.id)">
+                    <span class="check-icon" [class.visible]="isSelected(tag.id)">✓</span>
+                    {{ tag.name }}
+                  </div>
+                }
+              </div>
+            }
+
+            @if (selectedTags.length) {
+              <div class="selected-tags">
+                @for (tag of selectedTags; track tag.id) {
+                  <span class="selected-chip">
+                    {{ tag.name }}
+                    <button type="button" (click)="removeTag(tag.id)">✕</button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="close()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Salvar
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}
