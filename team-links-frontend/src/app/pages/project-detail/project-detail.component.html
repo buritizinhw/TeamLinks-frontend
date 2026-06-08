@@ -1,0 +1,118 @@
+@if (project) {
+  <app-page-header [title]="project.name">
+    <nav breadcrumb class="breadcrumb">
+      <a routerLink="/projects">Projects</a>
+      <span class="sep"> › </span>
+      <span class="current">{{ project.name }}</span>
+    </nav>
+    <button action class="btn btn-primary" (click)="openCreateLink()">
+      + Adicionar Link
+    </button>
+  </app-page-header>
+
+  <div class="page-body">
+    <!-- Project Info -->
+    <div class="tl-card project-info">
+      <div>
+        <h2>{{ project.name }}</h2>
+        <p>{{ project.description || 'Sem descrição' }}</p>
+      </div>
+      <button class="btn btn-ghost btn-icon" (click)="projectModalOpen = true" title="Editar projeto">
+        ✏️
+      </button>
+    </div>
+
+    <!-- Links Table -->
+    <div class="tl-card links-section">
+      <div class="links-header">
+        <span class="section-title">Links</span>
+      </div>
+
+      @if (links.length > 0) {
+        <div class="table-wrapper">
+          <table class="tl-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>URL</th>
+                <th>Tags</th>
+                <th style="width:100px">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (link of links; track link.id) {
+                <tr>
+                  <td>
+                    <div class="link-title">
+                      <a [href]="link.url" target="_blank" rel="noopener noreferrer">
+                        {{ link.title }}
+                      </a>
+                      <span class="ext-icon">↗</span>
+                    </div>
+                  </td>
+                  <td>
+                    <a [href]="link.url" target="_blank" rel="noopener noreferrer" class="link-url">
+                      {{ link.url }}
+                    </a>
+                  </td>
+                  <td>
+                    <div class="tags-cell">
+                      @for (tag of link.tags; track tag.id) {
+                        <app-tag-badge [tag]="tag"></app-tag-badge>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="btn btn-ghost btn-icon" (click)="openEditLink(link)" title="Editar">
+                        ✏️
+                      </button>
+                      <button class="btn btn-ghost btn-icon danger" (click)="openDeleteLink(link)" title="Excluir">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <p>Nenhum link cadastrado neste projeto.</p>
+          <button class="btn btn-secondary" (click)="openCreateLink()">
+            + Adicionar primeiro link
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh">
+    <p style="color:var(--text-secondary)">Projeto não encontrado.</p>
+  </div>
+}
+
+<!-- Modals -->
+<app-link-modal
+  [open]="linkModalOpen"
+  [link]="editingLink"
+  [availableTags]="tags"
+  (openChange)="linkModalOpen = $event"
+  (save)="onSaveLink($event)"
+></app-link-modal>
+
+<app-project-modal
+  [open]="projectModalOpen"
+  [project]="project"
+  (openChange)="projectModalOpen = $event"
+  (save)="onSaveProject($event)"
+></app-project-modal>
+
+<app-confirm-delete-dialog
+  [open]="deleteDialogOpen"
+  [title]="'Excluir link'"
+  [description]="'Tem certeza que deseja excluir ' + (linkToDelete?.title ?? '') + '?'"
+  (openChange)="deleteDialogOpen = $event"
+  (confirm)="onConfirmDeleteLink()"
+></app-confirm-delete-dialog>

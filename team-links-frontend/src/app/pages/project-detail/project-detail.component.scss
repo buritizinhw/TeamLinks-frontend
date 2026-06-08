@@ -1,0 +1,91 @@
+.page-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.project-info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+}
+
+.links-section {
+  overflow: hidden;
+
+  .links-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.link-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    &:hover { color: var(--primary); }
+  }
+
+  .ext-icon {
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+}
+
+.link-url {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &:hover { color: var(--text-secondary); }
+}
+
+.tags-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 2px;
+
+  .danger:hover {
+    color: var(--primary) !important;
+    background: var(--accent-subtle) !important;
+  }
+}
