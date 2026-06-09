@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Tag } from '../../models/types';
 
 @Component({
   selector: 'app-tag-modal',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, FontAwesomeModule],
   template: `
     @if (open) {
       <div class="modal-overlay" (click)="close()">
@@ -31,10 +33,10 @@ import { Tag } from '../../models/types';
 
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" (click)="close()">
-                Cancelar
+                <fa-icon [icon]="faTimes"></fa-icon> Cancelar
               </button>
               <button type="submit" class="btn btn-primary">
-                Salvar
+                <fa-icon [icon]="faSave"></fa-icon> Salvar
               </button>
             </div>
           </form>
@@ -49,6 +51,9 @@ export class TagModalComponent implements OnChanges {
   @Input() tag: Tag | null = null;
   @Output() openChange = new EventEmitter<boolean>();
   @Output() save = new EventEmitter<{ name: string }>();
+
+  faSave = faSave;
+  faTimes = faTimes;
 
   name = '';
 
