@@ -9,7 +9,9 @@
     <nav class="sidebar-nav">
       @for (item of navItems; track item.href) {
         <a [routerLink]="item.href" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-icon">
+            <fa-icon [icon]="item.icon"></fa-icon>
+          </span>
           {{ item.label }}
         </a>
       }
