@@ -6,7 +6,7 @@
         <h2>{{ link ? 'Editar Link' : 'Novo Link' }}</h2>
       </div>
 
-      <form class="modal-body" (ngSubmit)="onSubmit()">
+      <form class="modal-body" style="display:flex;flex-direction:column;gap:16px" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label class="form-label">
             Título <span class="required">*</span>
