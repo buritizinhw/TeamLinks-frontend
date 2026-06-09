@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Tag } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
@@ -11,6 +13,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   selector: 'app-tags',
   standalone: true,
   imports: [
+    FontAwesomeModule,
     PageHeaderComponent,
     TagBadgeComponent,
     TagModalComponent,
@@ -22,6 +25,10 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
 export class TagsComponent implements OnInit {
   tags: Tag[] = [];
   loading = false;
+
+  faPlus = faPlus;
+  faPencil = faPencil;
+  faTrash = faTrash;
 
   modalOpen = false;
   editingTag: Tag | null = null;

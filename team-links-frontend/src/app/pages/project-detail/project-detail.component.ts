@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, Project, Tag } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
@@ -16,6 +18,7 @@ import { takeUntil } from 'rxjs/operators';
   standalone: true,
   imports: [
     RouterLink,
+    FontAwesomeModule,
     PageHeaderComponent,
     TagBadgeComponent,
     LinkModalComponent,
@@ -30,6 +33,10 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   links: Link[] = [];
   tags: Tag[] = [];
   loading = false;
+
+  faPlus = faPlus;
+  faPencil = faPencil;
+  faTrash = faTrash;
 
   linkModalOpen = false;
   editingLink: Link | null = null;

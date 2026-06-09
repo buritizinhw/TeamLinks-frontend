@@ -10,8 +10,8 @@
     </span>
 
     <div class="card-actions">
-      <a [routerLink]="['/projects', project.id]" class="btn btn-secondary btn-sm">
-        🔗 Ver
+      <a [routerLink]="['/projects', project.id]" class="btn btn-secondary btn-sm" title="Ver links do projeto">
+        <fa-icon [icon]="faLink"></fa-icon> Ver
       </a>
 
       <div class="menu-wrapper" (click)="$event.stopPropagation()">
@@ -20,11 +20,11 @@
         </button>
         @if (menuOpen) {
           <div class="dropdown-menu">
-            <button class="dropdown-item" (click)="onEdit()">
-               Editar
+            <button class="dropdown-item" (click)="onEdit()" title="Editar projeto">
+              <fa-icon [icon]="faPencil"></fa-icon> Editar
             </button>
-            <button class="dropdown-item danger" (click)="onDelete()">
-               Excluir
+            <button class="dropdown-item danger" (click)="onDelete()" title="Excluir projeto">
+              <fa-icon [icon]="faTrash"></fa-icon> Excluir
             </button>
           </div>
         }

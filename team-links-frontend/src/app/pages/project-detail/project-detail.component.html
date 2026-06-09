@@ -6,7 +6,7 @@
       <span class="current">{{ project.name }}</span>
     </nav>
     <button action class="btn btn-primary" (click)="openCreateLink()">
-      + Adicionar Link
+      <fa-icon [icon]="faPlus"></fa-icon> Adicionar Link
     </button>
   </app-page-header>
 
@@ -18,7 +18,7 @@
         <p>{{ project.description || 'Sem descrição' }}</p>
       </div>
       <button class="btn btn-ghost btn-icon" (click)="projectModalOpen = true" title="Editar projeto">
-        ✏️
+        <fa-icon [icon]="faPencil"></fa-icon>
       </button>
     </div>
 
@@ -65,10 +65,10 @@
                   <td>
                     <div class="row-actions">
                       <button class="btn btn-ghost btn-icon" (click)="openEditLink(link)" title="Editar">
-                        ✏️
+                        <fa-icon [icon]="faPencil"></fa-icon>
                       </button>
                       <button class="btn btn-ghost btn-icon danger" (click)="openDeleteLink(link)" title="Excluir">
-                        🗑️
+                        <fa-icon [icon]="faTrash"></fa-icon>
                       </button>
                     </div>
                   </td>

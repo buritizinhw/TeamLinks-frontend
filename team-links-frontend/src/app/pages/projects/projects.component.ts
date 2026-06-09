@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
@@ -13,6 +15,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   standalone: true,
   imports: [
     FormsModule,
+    FontAwesomeModule,
     PageHeaderComponent,
     ProjectCardComponent,
     ProjectModalComponent,
@@ -25,6 +28,9 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   search = '';
   loading = false;
+
+  faPlus = faPlus;
+  faSearch = faSearch;
 
   modalOpen = false;
   editingProject: Project | null = null;

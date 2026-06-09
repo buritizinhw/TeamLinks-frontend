@@ -5,6 +5,39 @@
   gap: 24px;
 }
 
+.search-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.search-box fa-icon {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  padding: 6px 0;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

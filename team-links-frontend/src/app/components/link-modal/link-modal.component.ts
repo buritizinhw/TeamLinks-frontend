@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSave, faTimes, faCheck, faTimes as faTimes2 } from '@fortawesome/free-solid-svg-icons';
 import { Link, Tag } from '../../models/types';
 
 @Component({
   selector: 'app-link-modal',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, FontAwesomeModule],
   templateUrl: './link-modal.component.html',
 })
 export class LinkModalComponent implements OnChanges {
@@ -14,6 +16,11 @@ export class LinkModalComponent implements OnChanges {
   @Input() availableTags: Tag[] = [];
   @Output() openChange = new EventEmitter<boolean>();
   @Output() save = new EventEmitter<{ title: string; url: string; tagIds: number[] }>();
+
+  faSave = faSave;
+  faTimes = faTimes;
+  faCheck = faCheck;
+  faTimesCircle = faTimes2;
 
   title = '';
   url = '';
