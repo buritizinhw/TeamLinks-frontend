@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
 
 @Component({
   selector: 'app-project-modal',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, FontAwesomeModule],
   templateUrl: './project-modal.component.html',
 })
 export class ProjectModalComponent implements OnChanges {
@@ -13,6 +15,9 @@ export class ProjectModalComponent implements OnChanges {
   @Input() project: Project | null = null;
   @Output() openChange = new EventEmitter<boolean>();
   @Output() save = new EventEmitter<{ name: string; description: string }>();
+
+  faSave = faSave;
+  faTimes = faTimes;
 
   name = '';
   description = '';

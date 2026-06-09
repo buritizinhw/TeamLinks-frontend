@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, Project, Tag } from '../../models/types';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -14,6 +16,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   standalone: true,
   imports: [
     RouterLink,
+    FontAwesomeModule,
     PageHeaderComponent,
     TagBadgeComponent,
     LinkModalComponent,
@@ -27,6 +30,10 @@ export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   links: Link[] = [];
   tags: Tag[] = [];
+
+  faPlus = faPlus;
+  faPencil = faPencil;
+  faTrash = faTrash;
 
   linkModalOpen = false;
   editingLink: Link | null = null;
