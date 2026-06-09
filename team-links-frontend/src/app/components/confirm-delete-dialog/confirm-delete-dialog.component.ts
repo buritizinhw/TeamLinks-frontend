@@ -1,15 +1,18 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-confirm-delete-dialog',
   standalone: true,
+  imports: [FontAwesomeModule],
   template: `
     @if (open) {
       <div class="modal-overlay" (click)="close()">
         <div class="modal-box" style="text-align:center" (click)="$event.stopPropagation()">
 
           <div class="delete-icon-circle">
-            🗑️
+            <fa-icon [icon]="faTrash"></fa-icon>
           </div>
 
           <div class="modal-header">
@@ -25,7 +28,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
               Cancelar
             </button>
             <button class="btn btn-danger" (click)="onConfirm()">
-              Excluir
+              <fa-icon [icon]="faTrash"></fa-icon> Excluir
             </button>
           </div>
 
@@ -40,6 +43,8 @@ export class ConfirmDeleteDialogComponent {
   @Input() description = 'Tem certeza? Esta ação não pode ser desfeita.';
   @Output() openChange = new EventEmitter<boolean>();
   @Output() confirm = new EventEmitter<void>();
+
+  faTrash = faTrash;
 
   close() { this.openChange.emit(false); }
   onConfirm() { this.confirm.emit(); this.close(); }
