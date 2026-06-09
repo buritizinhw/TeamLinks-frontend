@@ -5,13 +5,16 @@
 </app-page-header>
 
 <div class="page-body">
-<div class="search-wrapper">
-  <input
-    class="form-input"
-    [(ngModel)]="search"
-    placeholder="Buscar projetos..."
-  />
-</div>
+  <div class="search-wrapper">
+    <div class="search-box">
+      <fa-icon [icon]="faSearch"></fa-icon>
+      <input
+        class="form-input search-input"
+        [(ngModel)]="search"
+        placeholder="Buscar projetos..."
+      />
+    </div>
+  </div>
 
   @if (filtered.length > 0) {
     <div class="projects-grid">

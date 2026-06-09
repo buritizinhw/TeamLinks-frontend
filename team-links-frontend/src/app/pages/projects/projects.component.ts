@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -29,6 +29,7 @@ export class ProjectsComponent implements OnInit {
   search = '';
 
   faPlus = faPlus;
+  faSearch = faSearch;
 
   modalOpen = false;
   editingProject: Project | null = null;
