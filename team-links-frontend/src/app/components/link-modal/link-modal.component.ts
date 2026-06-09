@@ -13,11 +13,11 @@ export class LinkModalComponent implements OnChanges {
   @Input() link: Link | null = null;
   @Input() availableTags: Tag[] = [];
   @Output() openChange = new EventEmitter<boolean>();
-  @Output() save = new EventEmitter<{ title: string; url: string; tagIds: string[] }>();
+  @Output() save = new EventEmitter<{ title: string; url: string; tagIds: number[] }>();
 
   title = '';
   url = '';
-  selectedTagIds: string[] = [];
+  selectedTagIds: number[] = [];
   tagMenuOpen = false;
 
   ngOnChanges() {
@@ -40,14 +40,14 @@ export class LinkModalComponent implements OnChanges {
   }
 
   toggleTagMenu() { this.tagMenuOpen = !this.tagMenuOpen; }
-  toggleTag(tagId: string) {
+  toggleTag(tagId: number) {
     this.selectedTagIds = this.selectedTagIds.includes(tagId)
       ? this.selectedTagIds.filter(id => id !== tagId)
       : [...this.selectedTagIds, tagId];
   }
 
-  isSelected(tagId: string) { return this.selectedTagIds.includes(tagId); }
-  removeTag(tagId: string) {
+  isSelected(tagId: number) { return this.selectedTagIds.includes(tagId); }
+  removeTag(tagId: number) {
     this.selectedTagIds = this.selectedTagIds.filter(id => id !== tagId);
   }
 

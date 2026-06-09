@@ -28,11 +28,6 @@
   } @else {
     <div class="empty-state">
       <p>{{ search ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.' }}</p>
-      @if (!search) {
-        <button class="btn btn-secondary" (click)="openCreate()">
-          + Criar primeiro projeto
-        </button>
-      }
     </div>
   }
 </div>

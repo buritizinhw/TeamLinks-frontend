@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Link, Project, Tag } from '../../models/types';
-import { DataService } from '../../services/data.service';
+import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { TagBadgeComponent } from '../../components/tag-badge/tag-badge.component';
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
 import { ProjectModalComponent } from '../../components/project-modal/project-modal.component';
 import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-detail',
@@ -23,10 +25,11 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.scss'],
 })
-export class ProjectDetailComponent implements OnInit {
+export class ProjectDetailComponent implements OnInit, OnDestroy {
   project: Project | null = null;
   links: Link[] = [];
   tags: Tag[] = [];
+  loading = false;
 
   linkModalOpen = false;
   editingLink: Link | null = null;
@@ -36,49 +39,98 @@ export class ProjectDetailComponent implements OnInit {
   deleteDialogOpen = false;
   linkToDelete: Link | null = null;
 
+  private projectId: number | null = null;
+  private destroy$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
-    private data: DataService,
+    private api: ApiService,
     private toast: ToastService,
   ) {}
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.data.projects$.subscribe(ps => {
-      this.project = ps.find(p => p.id === id) ?? null;
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.projectId = Number(id);
+        if (!isNaN(this.projectId)) {
+          this.loadProject();
+          this.loadLinks();
+          this.loadTags();
+        } else {
+          this.toast.error('ID do projeto inválido.');
+        }
+      } else {
+        this.toast.error('Projeto não encontrado.');
+      }
     });
-    this.data.getLinks$(id).subscribe(ls => this.links = ls);
-    this.data.tags$.subscribe(ts => this.tags = ts);
   }
 
-  get projectId() {
-    return this.route.snapshot.paramMap.get('id')!;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadProject() {
+    if (!this.projectId) return;
+    this.api.getProjectById(this.projectId).subscribe({
+      next: (p) => this.project = p,
+      error: () => this.toast.error('Erro ao carregar projeto.')
+    });
+  }
+
+  loadLinks() {
+    if (!this.projectId) return;
+    this.loading = true;
+    this.api.getProjectLinks(this.projectId).subscribe({
+      next: (res) => { this.links = res.content; this.loading = false; },
+      error: () => { this.toast.error('Erro ao carregar links.'); this.loading = false; }
+    });
+  }
+
+  loadTags() {
+    this.api.getTags().subscribe({
+      next: (res) => this.tags = res.content,
+      error: () => this.toast.error('Erro ao carregar tags.')
+    });
   }
 
   openCreateLink() { this.editingLink = null; this.linkModalOpen = true; }
   openEditLink(link: Link) { this.editingLink = link; this.linkModalOpen = true; }
   openDeleteLink(link: Link) { this.linkToDelete = link; this.deleteDialogOpen = true; }
 
-  onSaveLink(data: { title: string; url: string; tagIds: string[] }) {
+  onSaveLink(data: { title: string; url: string; tagIds: number[] }) {
+    if (!this.projectId) return;
+    
     if (this.editingLink) {
-      this.data.updateLink(this.editingLink.id, this.projectId, data);
-      this.toast.success('Link atualizado com sucesso!');
+      this.api.updateLink(this.editingLink.id, data).subscribe({
+        next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); },
+        error: () => this.toast.error('Erro ao atualizar link.')
+      });
     } else {
-      this.data.createLink(this.projectId, data);
-      this.toast.success('Link adicionado com sucesso!');
+      this.api.createLink(this.projectId, data).subscribe({
+        next: () => { this.toast.success('Link adicionado!'); this.loadLinks(); },
+        error: () => this.toast.error('Erro ao criar link.')
+      });
     }
   }
 
   onConfirmDeleteLink() {
     if (this.linkToDelete) {
-      this.data.deleteLink(this.linkToDelete.id, this.projectId);
-      this.toast.success('Link excluído com sucesso!');
+      this.api.deleteLink(this.linkToDelete.id).subscribe({
+        next: () => { this.toast.success('Link excluído!'); this.loadLinks(); },
+        error: () => this.toast.error('Erro ao excluir link.')
+      });
       this.linkToDelete = null;
     }
   }
 
   onSaveProject(data: { name: string; description: string }) {
-    this.data.updateProject(this.projectId, data);
-    this.toast.success('Projeto atualizado com sucesso!');
+    if (!this.projectId) return;
+    
+    this.api.updateProject(this.projectId, data).subscribe({
+      next: () => { this.toast.success('Projeto atualizado!'); this.loadProject(); },
+      error: () => this.toast.error('Erro ao atualizar projeto.')
+    });
   }
 }
