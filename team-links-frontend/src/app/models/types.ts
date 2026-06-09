@@ -5,10 +5,13 @@ export interface Tag {
 
 export interface Link {
   id: number;
-  title: string;
+  name: string;
   url: string;
-  tags: Tag[];
+  description: string;
+  shortUrl: string;
+  tagNames: string[];
   projectId: number;
+  projectName: string;
 }
 
 export interface Project {

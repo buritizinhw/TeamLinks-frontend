@@ -6,7 +6,6 @@ import { Link, Project, Tag } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
-import { TagBadgeComponent } from '../../components/tag-badge/tag-badge.component';
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
 import { ProjectModalComponent } from '../../components/project-modal/project-modal.component';
 import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
@@ -20,7 +19,6 @@ import { takeUntil } from 'rxjs/operators';
     RouterLink,
     FontAwesomeModule,
     PageHeaderComponent,
-    TagBadgeComponent,
     LinkModalComponent,
     ProjectModalComponent,
     ConfirmDeleteDialogComponent,
@@ -46,7 +44,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   deleteDialogOpen = false;
   linkToDelete: Link | null = null;
 
-  private projectId: number | null = null;
+  projectId: number | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -57,18 +55,15 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.projectId = Number(id);
-        if (!isNaN(this.projectId)) {
-          this.loadProject();
-          this.loadLinks();
-          this.loadTags();
-        } else {
-          this.toast.error('ID do projeto inválido.');
-        }
+      const idStr = params.get('id');
+      const id = Number(idStr);
+      if (idStr && !isNaN(id)) {
+        this.projectId = id;
+        this.loadProject();
+        this.loadLinks();
+        this.loadTags();
       } else {
-        this.toast.error('Projeto não encontrado.');
+        this.toast.error('ID do projeto inválido.');
       }
     });
   }
@@ -81,7 +76,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   loadProject() {
     if (!this.projectId) return;
     this.api.getProjectById(this.projectId).subscribe({
-      next: (p) => this.project = p,
+      next: (p) => { this.project = p; },
       error: () => this.toast.error('Erro ao carregar projeto.')
     });
   }
@@ -106,9 +101,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   openEditLink(link: Link) { this.editingLink = link; this.linkModalOpen = true; }
   openDeleteLink(link: Link) { this.linkToDelete = link; this.deleteDialogOpen = true; }
 
-  onSaveLink(data: { title: string; url: string; tagIds: number[] }) {
+  onSaveLink(data: { name: string; url: string; description: string; tagNames: string[] }) {
     if (!this.projectId) return;
-    
     if (this.editingLink) {
       this.api.updateLink(this.editingLink.id, data).subscribe({
         next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); },
@@ -134,7 +128,6 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   onSaveProject(data: { name: string; description: string }) {
     if (!this.projectId) return;
-    
     this.api.updateProject(this.projectId, data).subscribe({
       next: () => { this.toast.success('Projeto atualizado!'); this.loadProject(); },
       error: () => this.toast.error('Erro ao atualizar projeto.')

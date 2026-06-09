@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
@@ -15,7 +13,6 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   standalone: true,
   imports: [
     FormsModule,
-    FontAwesomeModule,
     PageHeaderComponent,
     ProjectCardComponent,
     ProjectModalComponent,
@@ -27,10 +24,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
 export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   search = '';
-  loading = false;
-
-  faPlus = faPlus;
-  faSearch = faSearch;
+  loading = true;
 
   modalOpen = false;
   editingProject: Project | null = null;
@@ -43,13 +37,21 @@ export class ProjectsComponent implements OnInit {
     private toast: ToastService
   ) {}
 
-  ngOnInit() { this.loadProjects(); }
+  ngOnInit() {
+    this.loadProjects();
+  }
 
   loadProjects() {
     this.loading = true;
     this.api.getProjects().subscribe({
-      next: (res) => { this.projects = res.content; this.loading = false; },
-      error: () => { this.toast.error('Erro ao carregar projetos.'); this.loading = false; }
+      next: (res) => {
+        this.projects = res.content;
+        this.loading = false;
+      },
+      error: () => {
+        this.toast.error('Erro ao carregar projetos.');
+        this.loading = false;
+      }
     });
   }
 

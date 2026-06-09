@@ -1,29 +1,24 @@
 @if (open) {
   <div class="modal-overlay" (click)="close()">
     <div class="modal-box" (click)="$event.stopPropagation()">
-
       <div class="modal-header">
         <h2>{{ link ? 'Editar Link' : 'Novo Link' }}</h2>
       </div>
-
       <form class="modal-body" style="display:flex;flex-direction:column;gap:16px" (ngSubmit)="onSubmit()">
+
         <div class="form-group">
-          <label class="form-label">
-            Título <span class="required">*</span>
-          </label>
+          <label class="form-label">Nome <span class="required">*</span></label>
           <input
             class="form-input"
-            [(ngModel)]="title"
-            name="title"
-            placeholder="Título do link"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Nome do link"
             required
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">
-            URL <span class="required">*</span>
-          </label>
+          <label class="form-label">URL <span class="required">*</span></label>
           <input
             class="form-input"
             type="url"
@@ -35,12 +30,22 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <input
+            class="form-input"
+            [(ngModel)]="description"
+            name="description"
+            placeholder="Descrição opcional"
+          />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Tags</label>
           <div class="tag-dropdown">
             <button
               type="button"
               class="tag-trigger"
-              [class.placeholder]="!selectedTagIds.length"
+              [class.placeholder]="!selectedTagNames.length"
               (click)="toggleTagMenu()"
             >
               <span>{{ triggerLabel || 'Selecionar tags...' }}</span>
@@ -50,8 +55,8 @@
             @if (tagMenuOpen) {
               <div class="tag-menu">
                 @for (tag of availableTags; track tag.id) {
-                  <div class="tag-option" (click)="toggleTag(tag.id)">
-                    <span class="check-icon" [class.visible]="isSelected(tag.id)">
+                  <div class="tag-option" (click)="toggleTag(tag.name)">
+                    <span class="check-icon" [class.visible]="isSelected(tag.name)">
                       <fa-icon [icon]="faCheck"></fa-icon>
                     </span>
                     {{ tag.name }}
@@ -60,13 +65,13 @@
               </div>
             }
 
-            @if (selectedTags.length) {
+            @if (selectedTagNames.length) {
               <div class="selected-tags">
-                @for (tag of selectedTags; track tag.id) {
+                @for (tagName of selectedTagNames; track tagName) {
                   <span class="selected-chip">
-                    {{ tag.name }}
-                    <button type="button" (click)="removeTag(tag.id)" title="Remover tag">
-                      <fa-icon [icon]="faTimesCircle"></fa-icon>
+                    {{ tagName }}
+                    <button type="button" (click)="removeTag(tagName)" title="Remover tag">
+                      <fa-icon [icon]="faTimes"></fa-icon>
                     </button>
                   </span>
                 }
@@ -83,8 +88,8 @@
             <fa-icon [icon]="faSave"></fa-icon> Salvar
           </button>
         </div>
-      </form>
 
+      </form>
     </div>
   </div>
 }

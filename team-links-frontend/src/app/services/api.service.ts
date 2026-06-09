@@ -17,6 +17,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
+  // --- Projects ---
   getProjects(page = 0, size = 20): Observable<PageResponse<Project>> {
     return this.http.get<PageResponse<Project>>(`${this.base}/projects?page=${page}&size=${size}`);
   }
@@ -42,11 +43,11 @@ export class ApiService {
   }
 
   // --- Links ---
-    createLink(projectId: number, data: { title: string; url: string; tagIds: number[] }): Observable<Link> {
+  createLink(projectId: number, data: { name: string; url: string; description: string; tagNames: string[] }): Observable<Link> {
     return this.http.post<Link>(`${this.base}/links`, { ...data, projectId });
-    }
+  }
 
-  updateLink(id: number, data: { title: string; url: string; tagIds: number[] }): Observable<Link> {
+  updateLink(id: number, data: { name: string; url: string; description: string; tagNames: string[] }): Observable<Link> {
     return this.http.put<Link>(`${this.base}/links/${id}`, data);
   }
 
@@ -54,6 +55,7 @@ export class ApiService {
     return this.http.delete<void>(`${this.base}/links/${id}`);
   }
 
+  // --- Tags ---
   getTags(page = 0, size = 50): Observable<PageResponse<Tag>> {
     return this.http.get<PageResponse<Tag>>(`${this.base}/tags?page=${page}&size=${size}`);
   }
