@@ -6,14 +6,13 @@
 
 <div class="page-body">
   <!-- Search -->
-  <div class="search-wrapper">
-    <span class="search-icon">🔍</span>
-    <input
-      class="form-input"
-      [(ngModel)]="search"
-      placeholder="Buscar projetos..."
-    />
-  </div>
+<div class="search-wrapper">
+  <input
+    class="form-input"
+    [(ngModel)]="search"
+    placeholder="Buscar projetos..."
+  />
+</div>
 
   <!-- Grid -->
   @if (filtered.length > 0) {
