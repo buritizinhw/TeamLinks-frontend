@@ -1,7 +1,7 @@
 <div class="tl-card project-card" (click)="closeMenu()">
   <div class="card-body">
     <h3 class="card-title">{{ project.name }}</h3>
-    <p class="card-desc">{{ project.description }}</p>
+    <p class="card-desc">{{ project.description || 'Sem descrição' }}</p>
   </div>
 
   <div class="card-footer">

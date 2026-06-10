@@ -59,7 +59,7 @@ export class ProjectsComponent implements OnInit {
     const q = this.search.toLowerCase();
     return this.projects.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q)
+      (p.description ?? '').toLowerCase().includes(q)
     );
   }
 

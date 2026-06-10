@@ -9,6 +9,7 @@ import { PageHeaderComponent } from '../../components/page-header/page-header.co
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
 import { ProjectModalComponent } from '../../components/project-modal/project-modal.component';
 import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import { TagBadgeComponent } from '../../components/tag-badge/tag-badge.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -22,15 +23,18 @@ import { takeUntil } from 'rxjs/operators';
     LinkModalComponent,
     ProjectModalComponent,
     ConfirmDeleteDialogComponent,
+    TagBadgeComponent,
   ],
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.scss'],
 })
 export class ProjectDetailComponent implements OnInit, OnDestroy {
   project: Project | null = null;
+  projectLoading = true;
+  projectNotFound = false;
   links: Link[] = [];
   tags: Tag[] = [];
-  loading = false;
+  linksLoading = false;
 
   faPlus = faPlus;
   faPencil = faPencil;
@@ -63,6 +67,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
         this.loadLinks();
         this.loadTags();
       } else {
+        this.projectLoading = false;
+        this.projectNotFound = true;
         this.toast.error('ID do projeto inválido.');
       }
     });
@@ -75,18 +81,28 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   loadProject() {
     if (!this.projectId) return;
+    this.projectLoading = true;
+    this.projectNotFound = false;
     this.api.getProjectById(this.projectId).subscribe({
-      next: (p) => { this.project = p; },
-      error: () => this.toast.error('Erro ao carregar projeto.')
+      next: (p) => {
+        this.project = p;
+        this.projectLoading = false;
+      },
+      error: () => {
+        this.project = null;
+        this.projectNotFound = true;
+        this.projectLoading = false;
+        this.toast.error('Erro ao carregar projeto.');
+      }
     });
   }
 
   loadLinks() {
     if (!this.projectId) return;
-    this.loading = true;
+    this.linksLoading = true;
     this.api.getProjectLinks(this.projectId).subscribe({
-      next: (res) => { this.links = res.content; this.loading = false; },
-      error: () => { this.toast.error('Erro ao carregar links.'); this.loading = false; }
+      next: (res) => { this.links = res.content; this.linksLoading = false; },
+      error: () => { this.toast.error('Erro ao carregar links.'); this.linksLoading = false; }
     });
   }
 
@@ -97,6 +113,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  resolveTags(tagNames: string[]): Tag[] {
+    return tagNames
+      .map(name => this.tags.find(t => t.name === name))
+      .filter((tag): tag is Tag => !!tag);
+  }
+
   openCreateLink() { this.editingLink = null; this.linkModalOpen = true; }
   openEditLink(link: Link) { this.editingLink = link; this.linkModalOpen = true; }
   openDeleteLink(link: Link) { this.linkToDelete = link; this.deleteDialogOpen = true; }
@@ -105,13 +127,13 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     if (!this.projectId) return;
     if (this.editingLink) {
       this.api.updateLink(this.editingLink.id, data).subscribe({
-        next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); },
-        error: () => this.toast.error('Erro ao atualizar link.')
+        next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); this.loadProject(); },
+        error: (err) => this.toast.error(this.linkErrorMessage(err, 'atualizar'))
       });
     } else {
       this.api.createLink(this.projectId, data).subscribe({
-        next: () => { this.toast.success('Link adicionado!'); this.loadLinks(); },
-        error: () => this.toast.error('Erro ao criar link.')
+        next: () => { this.toast.success('Link adicionado!'); this.loadLinks(); this.loadProject(); },
+        error: (err) => this.toast.error(this.linkErrorMessage(err, 'criar'))
       });
     }
   }
@@ -119,7 +141,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   onConfirmDeleteLink() {
     if (this.linkToDelete) {
       this.api.deleteLink(this.linkToDelete.id).subscribe({
-        next: () => { this.toast.success('Link excluído!'); this.loadLinks(); },
+        next: () => { this.toast.success('Link excluído!'); this.loadLinks(); this.loadProject(); },
         error: () => this.toast.error('Erro ao excluir link.')
       });
       this.linkToDelete = null;
@@ -132,5 +154,13 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       next: () => { this.toast.success('Projeto atualizado!'); this.loadProject(); },
       error: () => this.toast.error('Erro ao atualizar projeto.')
     });
+  }
+
+  private linkErrorMessage(err: { error?: { error?: string } }, action: string): string {
+    const message = err?.error?.error;
+    if (message?.includes('Tag') && message.includes('não encontrada')) {
+      return 'Uma ou mais tags não existem. Crie-as na página Tags antes de associá-las.';
+    }
+    return `Erro ao ${action} link.`;
   }
 }

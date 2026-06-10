@@ -44,7 +44,7 @@ export class ApiService {
 
   // --- Links ---
   createLink(projectId: number, data: { name: string; url: string; description: string; tagNames: string[] }): Observable<Link> {
-    return this.http.post<Link>(`${this.base}/links`, { ...data, projectId });
+    return this.http.post<Link>(`${this.base}/links/project/${projectId}`, data);
   }
 
   updateLink(id: number, data: { name: string; url: string; description: string; tagNames: string[] }): Observable<Link> {
