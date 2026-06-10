@@ -1,22 +1,23 @@
 <app-page-header title="Projects">
   <button action class="btn btn-primary" (click)="openCreate()">
-    <fa-icon [icon]="faPlus"></fa-icon> Novo Projeto
+    + Novo Projeto
   </button>
 </app-page-header>
 
 <div class="page-body">
   <div class="search-wrapper">
-    <div class="search-box">
-      <fa-icon [icon]="faSearch"></fa-icon>
-      <input
-        class="form-input search-input"
-        [(ngModel)]="search"
-        placeholder="Buscar projetos..."
-      />
-    </div>
+    <input
+      class="form-input"
+      [(ngModel)]="search"
+      placeholder="Buscar projetos..."
+    />
   </div>
 
-  @if (filtered.length > 0) {
+  @if (loading) {
+    <div class="empty-state">
+      <p>Carregando projetos...</p>
+    </div>
+  } @else if (filtered.length > 0) {
     <div class="projects-grid">
       @for (project of filtered; track project.id) {
         <app-project-card
@@ -31,7 +32,7 @@
       <p>{{ search ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.' }}</p>
       @if (!search) {
         <button class="btn btn-secondary" (click)="openCreate()">
-          <fa-icon [icon]="faPlus"></fa-icon> Criar primeiro projeto
+          + Criar primeiro projeto
         </button>
       }
     </div>
@@ -48,7 +49,7 @@
 <app-confirm-delete-dialog
   [open]="deleteDialogOpen"
   [title]="'Excluir projeto'"
-  [description]="'Tem certeza que deseja excluir ' + (projectToDelete?.name ?? '') + '? Todos os links serão removidos.'"
+  [description]="'Tem certeza que deseja excluir ' + (projectToDelete?.name ?? '') + '?'"
   (openChange)="deleteDialogOpen = $event"
   (confirm)="onConfirmDelete()"
 ></app-confirm-delete-dialog>

@@ -28,10 +28,10 @@ const TAG_COLORS_DARK = [
 
 @Injectable({ providedIn: 'root' })
 export class TagColorService {
-  private colorMap = new Map<string, number>();
+  private colorMap = new Map<number, number>();
   private nextIndex = 0;
 
-  getStyle(tagId: string, isDark: boolean): { background: string; color: string; border: string } {
+  getStyle(tagId: number, isDark: boolean): { background: string; color: string; border: string } {
     if (!this.colorMap.has(tagId)) {
       this.colorMap.set(tagId, this.nextIndex);
       this.nextIndex = (this.nextIndex + 1) % TAG_COLORS.length;

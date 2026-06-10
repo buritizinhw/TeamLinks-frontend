@@ -1,18 +1,21 @@
 export interface Tag {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Link {
-  id: string;
-  title: string;
+  id: number;
+  name: string;
   url: string;
-  tags: Tag[];
-  projectId: string;
+  description: string;
+  shortUrl: string;
+  tagNames: string[];
+  projectId: number;
+  projectName: string;
 }
 
 export interface Project {
-  id: string;
+  id: number;
   name: string;
   description: string;
   linkCount: number;

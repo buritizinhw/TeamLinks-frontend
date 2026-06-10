@@ -1,4 +1,8 @@
-@if (project) {
+@if (projectLoading) {
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh">
+    <p style="color:var(--text-secondary)">Carregando projeto...</p>
+  </div>
+} @else if (project) {
   <app-page-header [title]="project.name">
     <nav breadcrumb class="breadcrumb">
       <a routerLink="/projects">Projects</a>
@@ -34,7 +38,6 @@
             <thead>
               <tr>
                 <th>Título</th>
-                <th>URL</th>
                 <th>Tags</th>
                 <th style="width:100px">Ações</th>
               </tr>
@@ -44,23 +47,18 @@
                 <tr>
                   <td>
                     <div class="link-title">
-                      <a [href]="link.url" target="_blank" rel="noopener noreferrer">
-                        {{ link.title }}
+                      <a [href]="link.shortUrl || link.url" target="_blank" rel="noopener noreferrer">
+                        {{ link.name }}
                       </a>
                       <span class="ext-icon">↗</span>
                     </div>
                   </td>
                   <td>
-                    <a [href]="link.url" target="_blank" rel="noopener noreferrer" class="link-url">
-                      {{ link.url }}
-                    </a>
-                  </td>
-                  <td>
-                    <div class="tags-cell">
-                      @for (tag of link.tags; track tag.id) {
-                        <app-tag-badge [tag]="tag"></app-tag-badge>
-                      }
-                    </div>
+                  <div class="tags-cell">
+                    @for (tag of resolveTags(link.tagNames ?? []); track tag.id) {
+                      <app-tag-badge [tag]="tag"></app-tag-badge>
+                    }
+                  </div>
                   </td>
                   <td>
                     <div class="row-actions">
@@ -84,7 +82,7 @@
       }
     </div>
   </div>
-} @else {
+} @else if (projectNotFound) {
   <div style="display:flex;align-items:center;justify-content:center;height:100vh">
     <p style="color:var(--text-secondary)">Projeto não encontrado.</p>
   </div>
@@ -109,7 +107,7 @@
 <app-confirm-delete-dialog
   [open]="deleteDialogOpen"
   [title]="'Excluir link'"
-  [description]="'Tem certeza que deseja excluir ' + (linkToDelete?.title ?? '') + '?'"
+  [description]="'Tem certeza que deseja excluir ' + (linkToDelete?.name ?? '') + '?'"
   (openChange)="deleteDialogOpen = $event"
   (confirm)="onConfirmDeleteLink()"
 ></app-confirm-delete-dialog>

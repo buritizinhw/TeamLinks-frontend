@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSave, faTimes, faCheck, faTimes as faTimes2 } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Link, Tag } from '../../models/types';
 
 @Component({
@@ -15,57 +15,61 @@ export class LinkModalComponent implements OnChanges {
   @Input() link: Link | null = null;
   @Input() availableTags: Tag[] = [];
   @Output() openChange = new EventEmitter<boolean>();
-  @Output() save = new EventEmitter<{ title: string; url: string; tagIds: string[] }>();
+  @Output() save = new EventEmitter<{ name: string; url: string; description: string; tagNames: string[] }>();
 
   faSave = faSave;
   faTimes = faTimes;
   faCheck = faCheck;
-  faTimesCircle = faTimes2;
 
-  title = '';
+  name = '';
   url = '';
-  selectedTagIds: string[] = [];
+  description = '';
+  selectedTagNames: string[] = [];
   tagMenuOpen = false;
 
   ngOnChanges() {
     if (this.open) {
-      this.title = this.link?.title ?? '';
+      this.name = this.link?.name ?? '';
       this.url = this.link?.url ?? '';
-      this.selectedTagIds = this.link?.tags.map(t => t.id) ?? [];
+      this.description = this.link?.description ?? '';
+      this.selectedTagNames = this.link?.tagNames ?? [];
       this.tagMenuOpen = false;
     }
   }
 
   get selectedTags() {
-    return this.availableTags.filter(t => this.selectedTagIds.includes(t.id));
+    return this.availableTags.filter(t => this.selectedTagNames.includes(t.name));
   }
 
   get triggerLabel() {
-    return this.selectedTagIds.length
-      ? `${this.selectedTagIds.length} tag(s) selecionada(s)`
+    return this.selectedTagNames.length
+      ? `${this.selectedTagNames.length} tag(s) selecionada(s)`
       : '';
   }
 
   toggleTagMenu() { this.tagMenuOpen = !this.tagMenuOpen; }
-  toggleTag(tagId: string) {
-    this.selectedTagIds = this.selectedTagIds.includes(tagId)
-      ? this.selectedTagIds.filter(id => id !== tagId)
-      : [...this.selectedTagIds, tagId];
+
+  toggleTag(tagName: string) {
+    this.selectedTagNames = this.selectedTagNames.includes(tagName)
+      ? this.selectedTagNames.filter(n => n !== tagName)
+      : [...this.selectedTagNames, tagName];
   }
 
-  isSelected(tagId: string) { return this.selectedTagIds.includes(tagId); }
-  removeTag(tagId: string) {
-    this.selectedTagIds = this.selectedTagIds.filter(id => id !== tagId);
+  isSelected(tagName: string) { return this.selectedTagNames.includes(tagName); }
+
+  removeTag(tagName: string) {
+    this.selectedTagNames = this.selectedTagNames.filter(n => n !== tagName);
   }
 
   close() { this.openChange.emit(false); this.tagMenuOpen = false; }
 
   onSubmit() {
-    if (!this.title.trim() || !this.url.trim()) return;
+    if (!this.name.trim() || !this.url.trim()) return;
     this.save.emit({
-      title: this.title.trim(),
+      name: this.name.trim(),
       url: this.url.trim(),
-      tagIds: this.selectedTagIds
+      description: this.description.trim(),
+      tagNames: this.selectedTagNames,
     });
     this.close();
   }

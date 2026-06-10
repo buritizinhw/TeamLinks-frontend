@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Tag } from '../../models/types';
-import { DataService } from '../../services/data.service';
+import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { TagBadgeComponent } from '../../components/tag-badge/tag-badge.component';
@@ -24,6 +24,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
 })
 export class TagsComponent implements OnInit {
   tags: Tag[] = [];
+  loading = false;
 
   faPlus = faPlus;
   faPencil = faPencil;
@@ -36,12 +37,18 @@ export class TagsComponent implements OnInit {
   tagToDelete: Tag | null = null;
 
   constructor(
-    private data: DataService,
+    private api: ApiService,
     private toast: ToastService
   ) {}
 
-  ngOnInit() {
-    this.data.tags$.subscribe(t => this.tags = t);
+  ngOnInit() { this.loadTags(); }
+
+  loadTags() {
+    this.loading = true;
+    this.api.getTags().subscribe({
+      next: (res) => { this.tags = res.content; this.loading = false; },
+      error: () => { this.toast.error('Erro ao carregar tags.'); this.loading = false; }
+    });
   }
 
   openCreate() { this.editingTag = null; this.modalOpen = true; }
@@ -50,18 +57,24 @@ export class TagsComponent implements OnInit {
 
   onSave(data: { name: string }) {
     if (this.editingTag) {
-      this.data.updateTag(this.editingTag.id, data);
-      this.toast.success('Tag atualizada com sucesso!');
+      this.api.updateTag(this.editingTag.id, data).subscribe({
+        next: () => { this.toast.success('Tag atualizada!'); this.loadTags(); },
+        error: () => this.toast.error('Erro ao atualizar tag.')
+      });
     } else {
-      this.data.createTag(data);
-      this.toast.success('Tag criada com sucesso!');
+      this.api.createTag(data).subscribe({
+        next: () => { this.toast.success('Tag criada!'); this.loadTags(); },
+        error: () => this.toast.error('Erro ao criar tag.')
+      });
     }
   }
 
   onConfirmDelete() {
     if (this.tagToDelete) {
-      this.data.deleteTag(this.tagToDelete.id);
-      this.toast.success('Tag excluída com sucesso!');
+      this.api.deleteTag(this.tagToDelete.id).subscribe({
+        next: () => { this.toast.success('Tag excluída!'); this.loadTags(); },
+        error: () => this.toast.error('Erro ao excluir tag.')
+      });
       this.tagToDelete = null;
     }
   }

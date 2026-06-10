@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
-import { DataService } from '../../services/data.service';
+import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ProjectCardComponent } from '../../components/project-card/project-card.component';
@@ -15,7 +13,6 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   standalone: true,
   imports: [
     FormsModule,
-    FontAwesomeModule,
     PageHeaderComponent,
     ProjectCardComponent,
     ProjectModalComponent,
@@ -27,9 +24,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
 export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   search = '';
-
-  faPlus = faPlus;
-  faSearch = faSearch;
+  loading = true;
 
   modalOpen = false;
   editingProject: Project | null = null;
@@ -38,19 +33,33 @@ export class ProjectsComponent implements OnInit {
   projectToDelete: Project | null = null;
 
   constructor(
-    private data: DataService,
+    private api: ApiService,
     private toast: ToastService
   ) {}
 
   ngOnInit() {
-    this.data.projects$.subscribe(p => this.projects = p);
+    this.loadProjects();
+  }
+
+  loadProjects() {
+    this.loading = true;
+    this.api.getProjects().subscribe({
+      next: (res) => {
+        this.projects = res.content;
+        this.loading = false;
+      },
+      error: () => {
+        this.toast.error('Erro ao carregar projetos.');
+        this.loading = false;
+      }
+    });
   }
 
   get filtered() {
     const q = this.search.toLowerCase();
     return this.projects.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q)
+      (p.description ?? '').toLowerCase().includes(q)
     );
   }
 
@@ -60,18 +69,24 @@ export class ProjectsComponent implements OnInit {
 
   onSave(data: { name: string; description: string }) {
     if (this.editingProject) {
-      this.data.updateProject(this.editingProject.id, data);
-      this.toast.success('Projeto atualizado com sucesso!');
+      this.api.updateProject(this.editingProject.id, data).subscribe({
+        next: () => { this.toast.success('Projeto atualizado!'); this.loadProjects(); },
+        error: () => this.toast.error('Erro ao atualizar projeto.')
+      });
     } else {
-      this.data.createProject(data);
-      this.toast.success('Projeto criado com sucesso!');
+      this.api.createProject(data).subscribe({
+        next: () => { this.toast.success('Projeto criado!'); this.loadProjects(); },
+        error: () => this.toast.error('Erro ao criar projeto.')
+      });
     }
   }
 
   onConfirmDelete() {
     if (this.projectToDelete) {
-      this.data.deleteProject(this.projectToDelete.id);
-      this.toast.success('Projeto excluído com sucesso!');
+      this.api.deleteProject(this.projectToDelete.id).subscribe({
+        next: () => { this.toast.success('Projeto excluído!'); this.loadProjects(); },
+        error: () => this.toast.error('Erro ao excluir projeto.')
+      });
       this.projectToDelete = null;
     }
   }
