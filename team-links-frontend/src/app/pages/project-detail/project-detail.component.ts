@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -29,12 +29,12 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./project-detail.component.scss'],
 })
 export class ProjectDetailComponent implements OnInit, OnDestroy {
-  project: Project | null = null;
-  projectLoading = true;
-  projectNotFound = false;
-  links: Link[] = [];
-  tags: Tag[] = [];
-  linksLoading = false;
+  project = signal<Project | null>(null);
+  projectLoading = signal(true);
+  projectNotFound = signal(false);
+  links = signal<Link[]>([]);
+  tags = signal<Tag[]>([]);
+  linksLoading = signal(false);
 
   faPlus = faPlus;
   faPencil = faPencil;
@@ -67,8 +67,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
         this.loadLinks();
         this.loadTags();
       } else {
-        this.projectLoading = false;
-        this.projectNotFound = true;
+        this.projectLoading.set(false);
+        this.projectNotFound.set(true);
         this.toast.error('ID do projeto inválido.');
       }
     });
@@ -81,17 +81,17 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   loadProject() {
     if (!this.projectId) return;
-    this.projectLoading = true;
-    this.projectNotFound = false;
+    this.projectLoading.set(true);
+    this.projectNotFound.set(false);
     this.api.getProjectById(this.projectId).subscribe({
       next: (p) => {
-        this.project = p;
-        this.projectLoading = false;
+        this.project.set(p);
+        this.projectLoading.set(false);
       },
       error: () => {
-        this.project = null;
-        this.projectNotFound = true;
-        this.projectLoading = false;
+        this.project.set(null);
+        this.projectNotFound.set(true);
+        this.projectLoading.set(false);
         this.toast.error('Erro ao carregar projeto.');
       }
     });
@@ -99,23 +99,23 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   loadLinks() {
     if (!this.projectId) return;
-    this.linksLoading = true;
+    this.linksLoading.set(true);
     this.api.getProjectLinks(this.projectId).subscribe({
-      next: (res) => { this.links = res.content; this.linksLoading = false; },
-      error: () => { this.toast.error('Erro ao carregar links.'); this.linksLoading = false; }
+      next: (res) => { this.links.set(res.content); this.linksLoading.set(false); },
+      error: () => { this.toast.error('Erro ao carregar links.'); this.linksLoading.set(false); }
     });
   }
 
   loadTags() {
     this.api.getTags().subscribe({
-      next: (res) => this.tags = res.content,
+      next: (res) => this.tags.set(res.content),
       error: () => this.toast.error('Erro ao carregar tags.')
     });
   }
 
   resolveTags(tagNames: string[]): Tag[] {
     return tagNames
-      .map(name => this.tags.find(t => t.name === name))
+      .map(name => this.tags().find(t => t.name === name))
       .filter((tag): tag is Tag => !!tag);
   }
 

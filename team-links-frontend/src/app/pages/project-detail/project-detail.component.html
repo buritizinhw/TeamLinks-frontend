@@ -1,8 +1,8 @@
-@if (projectLoading) {
+@if (projectLoading()) {
   <div style="display:flex;align-items:center;justify-content:center;height:100vh">
     <p style="color:var(--text-secondary)">Carregando projeto...</p>
   </div>
-} @else if (project) {
+} @else if (project(); as project) {
   <app-page-header [title]="project.name">
     <nav breadcrumb class="breadcrumb">
       <a routerLink="/projects">Projects</a>
@@ -32,7 +32,7 @@
         <span class="section-title">Links</span>
       </div>
 
-      @if (links.length > 0) {
+      @if (links().length > 0) {
         <div class="table-wrapper">
           <table class="tl-table">
             <thead>
@@ -43,7 +43,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (link of links; track link.id) {
+              @for (link of links(); track link.id) {
                 <tr>
                   <td>
                     <div class="link-title">
@@ -82,7 +82,7 @@
       }
     </div>
   </div>
-} @else if (projectNotFound) {
+} @else if (projectNotFound()) {
   <div style="display:flex;align-items:center;justify-content:center;height:100vh">
     <p style="color:var(--text-secondary)">Projeto não encontrado.</p>
   </div>
@@ -92,14 +92,14 @@
 <app-link-modal
   [open]="linkModalOpen"
   [link]="editingLink"
-  [availableTags]="tags"
+  [availableTags]="tags()"
   (openChange)="linkModalOpen = $event"
   (save)="onSaveLink($event)"
 ></app-link-modal>
 
 <app-project-modal
   [open]="projectModalOpen"
-  [project]="project"
+  [project]="project()"
   (openChange)="projectModalOpen = $event"
   (save)="onSaveProject($event)"
 ></app-project-modal>
