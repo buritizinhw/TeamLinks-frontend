@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarNavComponent } from './components/sidebar-nav/sidebar-nav.component';
 import { ThemeService } from './services/theme.service';
@@ -12,7 +12,7 @@ import { ToastService, Toast } from './services/toast.service';
   styleUrl: './app.scss'
 })
 export class AppComponent implements OnInit {
-  toasts: Toast[] = [];
+  toasts = signal<Toast[]>([]);
 
   constructor(
     public theme: ThemeService,
@@ -20,6 +20,6 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.toastService.toasts$.subscribe(t => this.toasts = t);
+    this.toastService.toasts$.subscribe(t => this.toasts.set(t));
   }
 }

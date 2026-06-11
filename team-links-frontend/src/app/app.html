@@ -8,7 +8,7 @@
 
 <!-- Toast Notifications -->
 <div class="toast-container">
-  @for (toast of toasts; track toast.id) {
+  @for (toast of toasts(); track toast.id) {
     <div class="toast" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
       {{ toast.message }}
     </div>
