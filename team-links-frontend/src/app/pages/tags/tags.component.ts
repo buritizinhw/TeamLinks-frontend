@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Tag } from '../../models/types';
@@ -23,8 +23,8 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   styleUrls: ['./tags.component.scss'],
 })
 export class TagsComponent implements OnInit {
-  tags: Tag[] = [];
-  loading = false;
+  tags = signal<Tag[]>([]);
+  loading = signal(false);
 
   faPlus = faPlus;
   faPencil = faPencil;
@@ -44,10 +44,10 @@ export class TagsComponent implements OnInit {
   ngOnInit() { this.loadTags(); }
 
   loadTags() {
-    this.loading = true;
+    this.loading.set(true);
     this.api.getTags().subscribe({
-      next: (res) => { this.tags = res.content; this.loading = false; },
-      error: () => { this.toast.error('Erro ao carregar tags.'); this.loading = false; }
+      next: (res) => { this.tags.set(res.content); this.loading.set(false); },
+      error: () => { this.toast.error('Erro ao carregar tags.'); this.loading.set(false); }
     });
   }
 
