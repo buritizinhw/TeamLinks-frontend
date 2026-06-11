@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../../models/types';
 import { ApiService } from '../../services/api.service';
@@ -22,9 +22,9 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
   styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
-  projects: Project[] = [];
+  projects = signal<Project[]>([]);
   search = '';
-  loading = true;
+  loading = signal(true);
 
   modalOpen = false;
   editingProject: Project | null = null;
@@ -42,26 +42,26 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadProjects() {
-    this.loading = true;
+    this.loading.set(true);
     this.api.getProjects().subscribe({
       next: (res) => {
-        this.projects = res.content;
-        this.loading = false;
+        this.projects.set(res.content);
+        this.loading.set(false);
       },
       error: () => {
         this.toast.error('Erro ao carregar projetos.');
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
 
-  get filtered() {
+  filtered = computed(() => {
     const q = this.search.toLowerCase();
-    return this.projects.filter(p =>
+    return this.projects().filter(p =>
       p.name.toLowerCase().includes(q) ||
       (p.description ?? '').toLowerCase().includes(q)
     );
-  }
+  });
 
   openCreate() { this.editingProject = null; this.modalOpen = true; }
   openEdit(p: Project) { this.editingProject = p; this.modalOpen = true; }

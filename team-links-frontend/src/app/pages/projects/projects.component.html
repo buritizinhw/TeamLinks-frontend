@@ -13,13 +13,13 @@
     />
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <div class="empty-state">
       <p>Carregando projetos...</p>
     </div>
-  } @else if (filtered.length > 0) {
+  } @else if (filtered().length > 0) {
     <div class="projects-grid">
-      @for (project of filtered; track project.id) {
+      @for (project of filtered(); track project.id) {
         <app-project-card
           [project]="project"
           (edit)="openEdit($event)"
