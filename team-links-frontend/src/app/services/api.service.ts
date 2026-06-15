@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Project, Link, Tag, Client } from '../models/types';
+import { environment } from '../../environments/environment';
 
 export interface ProjectPayload {
   name: string;
@@ -19,7 +20,7 @@ export interface PageResponse<T> {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = 'http://localhost:8080/api';
+  private base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

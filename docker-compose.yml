@@ -1,0 +1,16 @@
+services:
+  frontend:
+    build:
+      context: ./team-links-frontend
+    image: teamlinks-frontend:local
+    container_name: teamlinks-frontend
+    ports:
+      - "${FRONTEND_HOST_PORT:-4200}:80"
+    networks:
+      - teamlinks-network
+    mem_limit: 128m
+    cpus: 0.25
+
+networks:
+  teamlinks-network:
+    external: true

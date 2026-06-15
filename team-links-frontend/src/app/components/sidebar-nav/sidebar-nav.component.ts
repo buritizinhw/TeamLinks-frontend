@@ -19,7 +19,7 @@ export class SidebarNavComponent {
   navItems = [
     { href: '/',         label: 'Home',     icon: this.faHouse },
     { href: '/projects', label: 'Projects', icon: this.faFolder },
-    { href: '/clients',  label: 'Clientes', icon: this.faUsers },
+    { href: '/clients',  label: 'Clients', icon: this.faUsers },
     { href: '/tags',     label: 'Tags',     icon: this.faTag },
   ];
 }
