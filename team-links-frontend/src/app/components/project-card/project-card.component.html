@@ -6,12 +6,9 @@
 
   <div class="card-footer">
     <div class="footer-badges">
+      <span class="tl-badge badge-accent">{{ project.clientName }}</span>
       <span class="tl-badge badge-accent">
         {{ project.linkCount }} {{ project.linkCount === 1 ? 'link' : 'links' }}
-      </span>
-      <span class="tl-badge status-badge" [class]="statusClass(project.status)">
-        <span class="status-dot"></span>
-        {{ statusLabel(project.status) }}
       </span>
     </div>
 

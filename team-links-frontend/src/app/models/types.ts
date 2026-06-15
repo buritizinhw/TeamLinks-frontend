@@ -1,8 +1,14 @@
-export type ProjectStatus = 'INICIAR' | 'EM_ANDAMENTO' | 'CONCLUIDO';
-
 export interface Tag {
   id: number;
   name: string;
+}
+
+export interface Client {
+  id: number;
+  name: string;
+  projectCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Link {
@@ -11,6 +17,7 @@ export interface Link {
   url: string;
   description: string;
   shortUrl: string;
+  clickCount: number;
   tagNames: string[];
   projectId: number;
   projectName: string;
@@ -22,14 +29,9 @@ export interface Project {
   id: number;
   name: string;
   description: string;
-  status?: ProjectStatus;
+  clientId: number;
+  clientName: string;
   linkCount: number;
   createdAt: string;
   updatedAt: string;
 }
-
-export const PROJECT_STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: 'INICIAR', label: 'A iniciar' },
-  { value: 'EM_ANDAMENTO', label: 'Em andamento' },
-  { value: 'CONCLUIDO', label: 'Concluído' },
-];

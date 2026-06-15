@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'projects',
-    pathMatch: 'full'
+    loadComponent: () =>
+      import('./pages/home/home.component').then(m => m.HomeComponent)
   },
   {
     path: 'projects',
@@ -15,6 +15,11 @@ export const routes: Routes = [
     path: 'projects/:id',
     loadComponent: () =>
       import('./pages/project-detail/project-detail.component').then(m => m.ProjectDetailComponent)
+  },
+  {
+    path: 'clients',
+    loadComponent: () =>
+      import('./pages/clients/clients.component').then(m => m.ClientsComponent)
   },
   {
     path: 'tags',

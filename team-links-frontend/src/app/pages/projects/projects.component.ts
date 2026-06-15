@@ -1,9 +1,8 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Project } from '../../models/types';
+import { Client, Project } from '../../models/types';
 import { ApiService, ProjectPayload } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
-import { isProjectCompleted } from '../../utils/project-status.util';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ProjectCardComponent } from '../../components/project-card/project-card.component';
 import { ProjectModalComponent } from '../../components/project-modal/project-modal.component';
@@ -24,6 +23,7 @@ import { ConfirmDeleteDialogComponent } from '../../components/confirm-delete-di
 })
 export class ProjectsComponent implements OnInit {
   projects = signal<Project[]>([]);
+  clients = signal<Client[]>([]);
   search = '';
   loading = signal(true);
 
@@ -40,6 +40,7 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.loadProjects();
+    this.loadClients();
   }
 
   loadProjects() {
@@ -56,25 +57,21 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
-  private matchesSearch(project: Project): boolean {
-    const q = this.search.toLowerCase();
-    return (
-      project.name.toLowerCase().includes(q) ||
-      (project.description ?? '').toLowerCase().includes(q)
-    );
+  loadClients() {
+    this.api.getClients(0, 100).subscribe({
+      next: (res) => this.clients.set(res.content),
+      error: () => this.toast.error('Erro ao carregar clientes.')
+    });
   }
 
-  activeProjects = computed(() =>
-    this.projects().filter(p => !isProjectCompleted(p.status) && this.matchesSearch(p))
-  );
-
-  completedProjects = computed(() =>
-    this.projects().filter(p => isProjectCompleted(p.status) && this.matchesSearch(p))
-  );
-
-  hasResults = computed(() =>
-    this.activeProjects().length > 0 || this.completedProjects().length > 0
-  );
+  filteredProjects = computed(() => {
+    const q = this.search.toLowerCase();
+    return this.projects().filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.description ?? '').toLowerCase().includes(q) ||
+      (p.clientName ?? '').toLowerCase().includes(q)
+    );
+  });
 
   openCreate() { this.editingProject = null; this.modalOpen = true; }
   openEdit(p: Project) { this.editingProject = p; this.modalOpen = true; }

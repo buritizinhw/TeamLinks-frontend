@@ -2,10 +2,9 @@ import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Link, Project, Tag } from '../../models/types';
+import { Client, Link, Project, Tag } from '../../models/types';
 import { ApiService, ProjectPayload } from '../../services/api.service';
 import { formatDateTime } from '../../utils/date.util';
-import { projectStatusClass, projectStatusLabel } from '../../utils/project-status.util';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
@@ -36,6 +35,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   projectNotFound = signal(false);
   links = signal<Link[]>([]);
   tags = signal<Tag[]>([]);
+  clients = signal<Client[]>([]);
   linksLoading = signal(false);
 
   faPlus = faPlus;
@@ -43,8 +43,6 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   faTrash = faTrash;
 
   formatDateTime = formatDateTime;
-  statusLabel = projectStatusLabel;
-  statusClass = projectStatusClass;
 
   linkModalOpen = false;
   editingLink: Link | null = null;
@@ -56,6 +54,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   projectId: number | null = null;
   private destroy$ = new Subject<void>();
+  private readonly onVisibilityChange = () => {
+    if (document.visibilityState === 'visible' && this.projectId) {
+      this.loadLinks(false);
+    }
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -64,6 +67,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const idStr = params.get('id');
       const id = Number(idStr);
@@ -72,6 +77,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
         this.loadProject();
         this.loadLinks();
         this.loadTags();
+        this.loadClients();
       } else {
         this.projectLoading.set(false);
         this.projectNotFound.set(true);
@@ -81,6 +87,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -103,19 +110,43 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadLinks() {
+  loadLinks(showLoading = true) {
     if (!this.projectId) return;
-    this.linksLoading.set(true);
+    if (showLoading) this.linksLoading.set(true);
     this.api.getProjectLinks(this.projectId).subscribe({
       next: (res) => { this.links.set(res.content); this.linksLoading.set(false); },
-      error: () => { this.toast.error('Erro ao carregar links.'); this.linksLoading.set(false); }
+      error: () => {
+        if (showLoading) this.toast.error('Erro ao carregar links.');
+        this.linksLoading.set(false);
+      }
     });
+  }
+
+  onLinkClick(link: Link) {
+    if (!link.shortUrl) return;
+
+    this.links.update(list =>
+      [...list]
+        .map(item =>
+          item.id === link.id
+            ? { ...item, clickCount: (item.clickCount ?? 0) + 1 }
+            : item
+        )
+        .sort((a, b) => (b.clickCount ?? 0) - (a.clickCount ?? 0))
+    );
   }
 
   loadTags() {
     this.api.getTags().subscribe({
       next: (res) => this.tags.set(res.content),
       error: () => this.toast.error('Erro ao carregar tags.')
+    });
+  }
+
+  loadClients() {
+    this.api.getClients(0, 100).subscribe({
+      next: (res) => this.clients.set(res.content),
+      error: () => this.toast.error('Erro ao carregar clientes.')
     });
   }
 

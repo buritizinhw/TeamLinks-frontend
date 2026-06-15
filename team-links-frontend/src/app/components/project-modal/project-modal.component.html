@@ -32,10 +32,10 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-input" [(ngModel)]="status" name="status">
-            @for (option of statusOptions; track option.value) {
-              <option [value]="option.value">{{ option.label }}</option>
+          <label class="form-label">Cliente <span class="required">*</span></label>
+          <select class="form-input" [(ngModel)]="clientId" name="clientId" required>
+            @for (client of clients; track client.id) {
+              <option [ngValue]="client.id">{{ client.name }}</option>
             }
           </select>
         </div>
@@ -44,7 +44,7 @@
           <button type="button" class="btn btn-secondary" (click)="close()">
             <fa-icon [icon]="faTimes"></fa-icon> Cancelar
           </button>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" [disabled]="!clientId">
             <fa-icon [icon]="faSave"></fa-icon> Salvar
           </button>
         </div>

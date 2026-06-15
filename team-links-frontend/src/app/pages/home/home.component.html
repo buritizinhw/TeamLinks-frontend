@@ -1,0 +1,100 @@
+<div class="home-page">
+  <div class="home-center">
+    <h1 class="home-logo">
+      teamlinks<span class="logo-mark" aria-hidden="true"></span>
+    </h1>
+
+    <form class="home-search" (ngSubmit)="onSubmitUrl()">
+      <div class="search-box">
+        <fa-icon [icon]="faLink" class="search-icon"></fa-icon>
+        <input
+          class="home-input"
+          [(ngModel)]="urlInput"
+          name="urlInput"
+          placeholder="Cole ou digite um link..."
+          autocomplete="off"
+          autofocus
+        />
+      </div>
+      <button type="submit" class="btn btn-primary home-submit" [disabled]="!urlInput.trim()">
+        Adicionar
+      </button>
+    </form>
+
+    @if (showCard) {
+      <div class="quick-add-card tl-card">
+        <h2>Adicionar link</h2>
+        <p class="url-preview">{{ url }}</p>
+
+        <div class="form-group">
+          <label class="form-label">Nome <span class="required">*</span></label>
+          <input class="form-input" [(ngModel)]="name" name="name" placeholder="Nome do link" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Projeto <span class="required">*</span></label>
+          <select class="form-input" [(ngModel)]="selectedProjectId" name="projectId">
+            @for (project of projects(); track project.id) {
+              <option [ngValue]="project.id">{{ project.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tag-dropdown">
+            <button
+              type="button"
+              class="tag-trigger"
+              [class.placeholder]="!selectedTagNames.length"
+              (click)="toggleTagMenu()"
+            >
+              <span>{{ triggerLabel || 'Selecionar tags...' }}</span>
+              <span>⌄</span>
+            </button>
+
+            @if (tagMenuOpen) {
+              <div class="tag-menu">
+                @for (tag of tags(); track tag.id) {
+                  <div class="tag-option" (click)="toggleTag(tag.name)">
+                    <span class="check-icon" [class.visible]="isSelected(tag.name)">
+                      <fa-icon [icon]="faCheck"></fa-icon>
+                    </span>
+                    {{ tag.name }}
+                  </div>
+                }
+              </div>
+            }
+
+            @if (selectedTagNames.length) {
+              <div class="selected-tags">
+                @for (tagName of selectedTagNames; track tagName) {
+                  <span class="selected-chip">
+                    {{ tagName }}
+                    <button type="button" (click)="removeTag(tagName)" title="Remover tag">
+                      <fa-icon [icon]="faTimes"></fa-icon>
+                    </button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelCard()">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="!name.trim() || !selectedProjectId || saving()"
+            (click)="saveLink()"
+          >
+            {{ saving() ? 'Salvando...' : 'Salvar link' }}
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

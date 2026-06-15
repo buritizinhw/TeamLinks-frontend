@@ -15,18 +15,14 @@
   </app-page-header>
 
   <div class="page-body">
-    <!-- Project Info -->
     <div class="tl-card project-info">
       <div>
         <div class="project-title-row">
           <h2>{{ project.name }}</h2>
-          <span class="tl-badge status-badge" [class]="statusClass(project.status)">
-            <span class="status-dot"></span>
-            {{ statusLabel(project.status) }}
-          </span>
         </div>
         <p>{{ project.description || 'Sem descrição' }}</p>
         <div class="project-meta">
+          <span>Cliente: {{ project.clientName }}</span>
           <span>Criado em {{ formatDateTime(project.createdAt) }}</span>
         </div>
       </div>
@@ -35,10 +31,10 @@
       </button>
     </div>
 
-    <!-- Links Table -->
     <div class="tl-card links-section">
       <div class="links-header">
         <span class="section-title">Links</span>
+        <span class="section-hint">Ordenados por cliques</span>
       </div>
 
       @if (links().length > 0) {
@@ -48,6 +44,7 @@
               <tr>
                 <th>Título</th>
                 <th>Tags</th>
+                <th>Cliques</th>
                 <th>Atualizado em</th>
                 <th style="width:100px">Ações</th>
               </tr>
@@ -57,19 +54,25 @@
                 <tr>
                   <td>
                     <div class="link-title">
-                      <a [href]="link.shortUrl || link.url" target="_blank" rel="noopener noreferrer">
+                      <a
+                        [href]="link.shortUrl || link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        (click)="onLinkClick(link)"
+                      >
                         {{ link.name }}
                       </a>
                       <span class="ext-icon">↗</span>
                     </div>
                   </td>
                   <td>
-                  <div class="tags-cell">
-                    @for (tag of resolveTags(link.tagNames ?? []); track tag.id) {
-                      <app-tag-badge [tag]="tag"></app-tag-badge>
-                    }
-                  </div>
+                    <div class="tags-cell">
+                      @for (tag of resolveTags(link.tagNames ?? []); track tag.id) {
+                        <app-tag-badge [tag]="tag"></app-tag-badge>
+                      }
+                    </div>
                   </td>
+                  <td class="click-cell">{{ link.clickCount ?? 0 }}</td>
                   <td class="date-cell">{{ formatDateTime(link.updatedAt) }}</td>
                   <td>
                     <div class="row-actions">
@@ -99,7 +102,6 @@
   </div>
 }
 
-<!-- Modals -->
 <app-link-modal
   [open]="linkModalOpen"
   [link]="editingLink"
@@ -111,6 +113,7 @@
 <app-project-modal
   [open]="projectModalOpen"
   [project]="project()"
+  [clients]="clients()"
   (openChange)="projectModalOpen = $event"
   (save)="onSaveProject($event)"
 ></app-project-modal>

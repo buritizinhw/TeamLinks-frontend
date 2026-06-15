@@ -1,14 +1,14 @@
 <aside class="sidebar">
   <div class="sidebar-inner">
     <div class="sidebar-logo">
-      <a routerLink="/projects" class="logo-text">
-        teamlinks<span class="logo-dot">.</span>
+      <a routerLink="/" class="logo-text">
+        teamlinks<span class="logo-mark" aria-hidden="true"></span>
       </a>
     </div>
 
     <nav class="sidebar-nav">
       @for (item of navItems; track item.href) {
-        <a [routerLink]="item.href" routerLinkActive="active" class="nav-item">
+        <a [routerLink]="item.href" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.href === '/' }" class="nav-item">
           <span class="nav-icon">
             <fa-icon [icon]="item.icon"></fa-icon>
           </span>

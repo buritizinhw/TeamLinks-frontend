@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLink, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/types';
-import { projectStatusClass, projectStatusLabel } from '../../utils/project-status.util';
 
 @Component({
   selector: 'app-project-card',
@@ -22,9 +21,6 @@ export class ProjectCardComponent {
   faTrash = faTrash;
 
   menuOpen = false;
-
-  statusLabel = projectStatusLabel;
-  statusClass = projectStatusClass;
 
   toggleMenu(e: Event) {
     e.stopPropagation();

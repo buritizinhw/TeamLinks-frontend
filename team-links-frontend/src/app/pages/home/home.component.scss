@@ -1,0 +1,108 @@
+.home-page {
+  min-height: calc(100vh - 0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.home-center {
+  width: 100%;
+  max-width: 584px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.home-logo {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.home-search {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.search-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s, border-color 0.2s;
+
+  &:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-icon {
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+}
+
+.home-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--text-primary);
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+.home-submit {
+  min-width: 120px;
+}
+
+.quick-add-card {
+  width: 100%;
+  padding: 24px;
+  animation: slideUp 0.2s ease-out;
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+
+  .url-preview {
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    word-break: break-all;
+  }
+
+  .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
