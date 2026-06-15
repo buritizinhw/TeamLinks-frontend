@@ -6,10 +6,12 @@ import { Project, Tag } from '../../models/types';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
+
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, FontAwesomeModule],
+  imports: [FormsModule, FontAwesomeModule, ThemeToggleComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })

@@ -217,6 +217,13 @@ html, body {
     color: var(--primary);
     border-color: transparent;
   }
+
+  &.badge-client {
+    background: var(--elevated);
+    color: var(--text-primary);
+    border-color: var(--border);
+    font-weight: 600;
+  }
 }
 
 .modal-overlay {

@@ -1,9 +1,16 @@
 .home-page {
+  position: relative;
   min-height: calc(100vh - 0px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
+}
+
+.home-toolbar {
+  position: absolute;
+  top: 24px;
+  right: 24px;
 }
 
 .home-center {
