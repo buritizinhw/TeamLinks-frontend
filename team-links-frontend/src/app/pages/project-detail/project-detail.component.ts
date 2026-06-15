@@ -3,7 +3,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, Project, Tag } from '../../models/types';
-import { ApiService } from '../../services/api.service';
+import { ApiService, ProjectPayload } from '../../services/api.service';
+import { formatDateTime } from '../../utils/date.util';
+import { projectStatusClass, projectStatusLabel } from '../../utils/project-status.util';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
@@ -39,6 +41,10 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faPencil = faPencil;
   faTrash = faTrash;
+
+  formatDateTime = formatDateTime;
+  statusLabel = projectStatusLabel;
+  statusClass = projectStatusClass;
 
   linkModalOpen = false;
   editingLink: Link | null = null;
@@ -148,7 +154,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSaveProject(data: { name: string; description: string }) {
+  onSaveProject(data: ProjectPayload) {
     if (!this.projectId) return;
     this.api.updateProject(this.projectId, data).subscribe({
       next: () => { this.toast.success('Projeto atualizado!'); this.loadProject(); },

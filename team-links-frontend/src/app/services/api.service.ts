@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Project, Link, Tag } from '../models/types';
+import { Project, Link, Tag, ProjectStatus } from '../models/types';
+
+export interface ProjectPayload {
+  name: string;
+  description: string;
+  status: ProjectStatus;
+}
 
 export interface PageResponse<T> {
   content: T[];
@@ -26,11 +32,11 @@ export class ApiService {
     return this.http.get<Project>(`${this.base}/projects/${id}`);
   }
 
-  createProject(data: { name: string; description: string }): Observable<Project> {
+  createProject(data: ProjectPayload): Observable<Project> {
     return this.http.post<Project>(`${this.base}/projects`, data);
   }
 
-  updateProject(id: number, data: { name: string; description: string }): Observable<Project> {
+  updateProject(id: number, data: ProjectPayload): Observable<Project> {
     return this.http.put<Project>(`${this.base}/projects/${id}`, data);
   }
 

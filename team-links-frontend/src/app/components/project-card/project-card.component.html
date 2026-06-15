@@ -5,9 +5,15 @@
   </div>
 
   <div class="card-footer">
-    <span class="tl-badge badge-accent">
-      {{ project.linkCount }} {{ project.linkCount === 1 ? 'link' : 'links' }}
-    </span>
+    <div class="footer-badges">
+      <span class="tl-badge badge-accent">
+        {{ project.linkCount }} {{ project.linkCount === 1 ? 'link' : 'links' }}
+      </span>
+      <span class="tl-badge status-badge" [class]="statusClass(project.status)">
+        <span class="status-dot"></span>
+        {{ statusLabel(project.status) }}
+      </span>
+    </div>
 
     <div class="card-actions">
       <a [routerLink]="['/projects', project.id]" class="btn btn-secondary btn-sm" title="Ver links do projeto">

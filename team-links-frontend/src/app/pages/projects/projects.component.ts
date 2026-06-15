@@ -1,8 +1,9 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../../models/types';
-import { ApiService } from '../../services/api.service';
+import { ApiService, ProjectPayload } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
+import { isProjectCompleted } from '../../utils/project-status.util';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { ProjectCardComponent } from '../../components/project-card/project-card.component';
 import { ProjectModalComponent } from '../../components/project-modal/project-modal.component';
@@ -43,7 +44,7 @@ export class ProjectsComponent implements OnInit {
 
   loadProjects() {
     this.loading.set(true);
-    this.api.getProjects().subscribe({
+    this.api.getProjects(0, 100).subscribe({
       next: (res) => {
         this.projects.set(res.content);
         this.loading.set(false);
@@ -55,19 +56,31 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
-  filtered = computed(() => {
+  private matchesSearch(project: Project): boolean {
     const q = this.search.toLowerCase();
-    return this.projects().filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      (p.description ?? '').toLowerCase().includes(q)
+    return (
+      project.name.toLowerCase().includes(q) ||
+      (project.description ?? '').toLowerCase().includes(q)
     );
-  });
+  }
+
+  activeProjects = computed(() =>
+    this.projects().filter(p => !isProjectCompleted(p.status) && this.matchesSearch(p))
+  );
+
+  completedProjects = computed(() =>
+    this.projects().filter(p => isProjectCompleted(p.status) && this.matchesSearch(p))
+  );
+
+  hasResults = computed(() =>
+    this.activeProjects().length > 0 || this.completedProjects().length > 0
+  );
 
   openCreate() { this.editingProject = null; this.modalOpen = true; }
   openEdit(p: Project) { this.editingProject = p; this.modalOpen = true; }
   openDelete(p: Project) { this.projectToDelete = p; this.deleteDialogOpen = true; }
 
-  onSave(data: { name: string; description: string }) {
+  onSave(data: ProjectPayload) {
     if (this.editingProject) {
       this.api.updateProject(this.editingProject.id, data).subscribe({
         next: () => { this.toast.success('Projeto atualizado!'); this.loadProjects(); },

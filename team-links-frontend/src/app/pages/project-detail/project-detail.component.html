@@ -18,8 +18,17 @@
     <!-- Project Info -->
     <div class="tl-card project-info">
       <div>
-        <h2>{{ project.name }}</h2>
+        <div class="project-title-row">
+          <h2>{{ project.name }}</h2>
+          <span class="tl-badge status-badge" [class]="statusClass(project.status)">
+            <span class="status-dot"></span>
+            {{ statusLabel(project.status) }}
+          </span>
+        </div>
         <p>{{ project.description || 'Sem descrição' }}</p>
+        <div class="project-meta">
+          <span>Criado em {{ formatDateTime(project.createdAt) }}</span>
+        </div>
       </div>
       <button class="btn btn-ghost btn-icon" (click)="projectModalOpen = true" title="Editar projeto">
         <fa-icon [icon]="faPencil"></fa-icon>
@@ -39,6 +48,7 @@
               <tr>
                 <th>Título</th>
                 <th>Tags</th>
+                <th>Atualizado em</th>
                 <th style="width:100px">Ações</th>
               </tr>
             </thead>
@@ -60,6 +70,7 @@
                     }
                   </div>
                   </td>
+                  <td class="date-cell">{{ formatDateTime(link.updatedAt) }}</td>
                   <td>
                     <div class="row-actions">
                       <button class="btn btn-ghost btn-icon" (click)="openEditLink(link)" title="Editar">

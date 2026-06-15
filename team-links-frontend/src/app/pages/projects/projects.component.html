@@ -17,16 +17,36 @@
     <div class="empty-state">
       <p>Carregando projetos...</p>
     </div>
-  } @else if (filtered().length > 0) {
-    <div class="projects-grid">
-      @for (project of filtered(); track project.id) {
-        <app-project-card
-          [project]="project"
-          (edit)="openEdit($event)"
-          (delete)="openDelete($event)"
-        ></app-project-card>
-      }
-    </div>
+  } @else if (hasResults()) {
+    @if (activeProjects().length > 0) {
+      <section class="projects-section">
+        <h2 class="section-heading">Em andamento</h2>
+        <div class="projects-grid">
+          @for (project of activeProjects(); track project.id) {
+            <app-project-card
+              [project]="project"
+              (edit)="openEdit($event)"
+              (delete)="openDelete($event)"
+            ></app-project-card>
+          }
+        </div>
+      </section>
+    }
+
+    @if (completedProjects().length > 0) {
+      <section class="projects-section">
+        <h2 class="section-heading">Concluídos</h2>
+        <div class="projects-grid">
+          @for (project of completedProjects(); track project.id) {
+            <app-project-card
+              [project]="project"
+              (edit)="openEdit($event)"
+              (delete)="openDelete($event)"
+            ></app-project-card>
+          }
+        </div>
+      </section>
+    }
   } @else {
     <div class="empty-state">
       <p>{{ search ? 'Nenhum projeto encontrado.' : 'Nenhum projeto cadastrado.' }}</p>
