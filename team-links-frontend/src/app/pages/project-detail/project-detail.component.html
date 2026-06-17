@@ -102,6 +102,91 @@
   </div>
 }
 
+@if (createLinkModalOpen) {
+  <div class="modal-overlay" (click)="closeCreateLinkModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Adicionar link</h2>
+      </div>
+
+      <form class="modal-body" (ngSubmit)="saveLink()">
+        <div class="form-group">
+          <label class="form-label">URL <span class="required">*</span></label>
+          <input
+            class="form-input"
+            [(ngModel)]="urlInput"
+            name="urlInput"
+            placeholder="Cole ou digite um link..."
+            autocomplete="off"
+            autofocus
+            (keydown.enter)="$event.preventDefault(); applyUrlFromInput()"
+            (paste)="onUrlPaste()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nome <span class="required">*</span></label>
+          <input class="form-input" [(ngModel)]="name" name="name" placeholder="Nome do link" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tag-dropdown">
+            <button
+              type="button"
+              class="tag-trigger"
+              [class.placeholder]="!selectedTagNames.length"
+              (click)="toggleTagMenu()"
+            >
+              <span>{{ triggerLabel || 'Selecionar tags...' }}</span>
+              <span>⌄</span>
+            </button>
+
+            @if (tagMenuOpen) {
+              <div class="tag-menu">
+                @for (tag of tags(); track tag.id) {
+                  <div class="tag-option" (click)="toggleTag(tag.name)">
+                    <span class="check-icon" [class.visible]="isSelected(tag.name)">
+                      <fa-icon [icon]="faCheck"></fa-icon>
+                    </span>
+                    {{ tag.name }}
+                  </div>
+                }
+              </div>
+            }
+
+            @if (selectedTagNames.length) {
+              <div class="selected-tags">
+                @for (tagName of selectedTagNames; track tagName) {
+                  <span class="selected-chip">
+                    {{ tagName }}
+                    <button type="button" (click)="removeTag(tagName)" title="Remover tag">
+                      <fa-icon [icon]="faTimes"></fa-icon>
+                    </button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateLinkModal()">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!urlInput.trim() || !name.trim() || saving()"
+          >
+            {{ saving() ? 'Salvando...' : 'Salvar link' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
 <app-link-modal
   [open]="linkModalOpen"
   [link]="editingLink"

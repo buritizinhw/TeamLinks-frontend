@@ -7,6 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { ToastService } from '../../services/toast.service';
 
 import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
+import { guessName, normalizeUrl } from '../../utils/url.util';
 
 @Component({
   selector: 'app-home',
@@ -58,8 +59,8 @@ export class HomeComponent implements OnInit {
     const trimmed = this.urlInput.trim();
     if (!trimmed) return;
 
-    this.url = this.normalizeUrl(trimmed);
-    this.name = this.guessName(this.url);
+    this.url = normalizeUrl(trimmed);
+    this.name = guessName(this.url);
     this.description = '';
     this.selectedTagNames = [];
     this.tagMenuOpen = false;
@@ -120,19 +121,5 @@ export class HomeComponent implements OnInit {
         }
       }
     });
-  }
-
-  private normalizeUrl(value: string): string {
-    if (/^https?:\/\//i.test(value)) return value;
-    return `https://${value}`;
-  }
-
-  private guessName(url: string): string {
-    try {
-      const hostname = new URL(url).hostname.replace(/^www\./, '');
-      return hostname.split('.')[0] || 'Link';
-    } catch {
-      return 'Link';
-    }
   }
 }

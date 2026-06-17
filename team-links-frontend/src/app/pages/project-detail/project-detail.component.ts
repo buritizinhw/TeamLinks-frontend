@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faTrash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Client, Link, Project, Tag } from '../../models/types';
 import { ApiService, ProjectPayload } from '../../services/api.service';
 import { formatDateTime } from '../../utils/date.util';
+import { guessName, normalizeUrl } from '../../utils/url.util';
 import { ToastService } from '../../services/toast.service';
 import { PageHeaderComponent } from '../../components/page-header/page-header.component';
 import { LinkModalComponent } from '../../components/link-modal/link-modal.component';
@@ -18,6 +20,7 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-project-detail',
   standalone: true,
   imports: [
+    FormsModule,
     RouterLink,
     FontAwesomeModule,
     PageHeaderComponent,
@@ -41,6 +44,16 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faPencil = faPencil;
   faTrash = faTrash;
+  faCheck = faCheck;
+  faTimes = faTimes;
+
+  createLinkModalOpen = false;
+  urlInput = '';
+  name = '';
+  description = '';
+  selectedTagNames: string[] = [];
+  tagMenuOpen = false;
+  saving = signal(false);
 
   formatDateTime = formatDateTime;
 
@@ -156,23 +169,95 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       .filter((tag): tag is Tag => !!tag);
   }
 
-  openCreateLink() { this.editingLink = null; this.linkModalOpen = true; }
+  openCreateLink() {
+    this.editingLink = null;
+    this.linkModalOpen = false;
+    this.createLinkModalOpen = true;
+    this.urlInput = '';
+    this.name = '';
+    this.description = '';
+    this.selectedTagNames = [];
+    this.tagMenuOpen = false;
+  }
+
+  closeCreateLinkModal() {
+    this.createLinkModalOpen = false;
+    this.urlInput = '';
+    this.name = '';
+    this.tagMenuOpen = false;
+  }
+
+  applyUrlFromInput() {
+    const trimmed = this.urlInput.trim();
+    if (!trimmed) return;
+
+    this.urlInput = normalizeUrl(trimmed);
+    this.name = guessName(this.urlInput);
+  }
+
+  onUrlPaste() {
+    setTimeout(() => this.applyUrlFromInput());
+  }
+
+  toggleTagMenu() { this.tagMenuOpen = !this.tagMenuOpen; }
+
+  toggleTag(tagName: string) {
+    this.selectedTagNames = this.selectedTagNames.includes(tagName)
+      ? this.selectedTagNames.filter(n => n !== tagName)
+      : [...this.selectedTagNames, tagName];
+  }
+
+  isSelected(tagName: string) { return this.selectedTagNames.includes(tagName); }
+
+  removeTag(tagName: string) {
+    this.selectedTagNames = this.selectedTagNames.filter(n => n !== tagName);
+  }
+
+  get triggerLabel() {
+    return this.selectedTagNames.length
+      ? `${this.selectedTagNames.length} tag(s) selecionada(s)`
+      : '';
+  }
+
+  saveLink() {
+    if (!this.projectId) return;
+
+    this.applyUrlFromInput();
+    if (!this.name.trim() || !this.urlInput.trim()) return;
+
+    this.saving.set(true);
+    this.api.createLink(this.projectId, {
+      name: this.name.trim(),
+      url: this.urlInput.trim(),
+      description: this.description.trim(),
+      tagNames: this.selectedTagNames,
+    }).subscribe({
+      next: (link) => {
+        this.toast.success('Link adicionado!');
+        this.saving.set(false);
+        this.closeCreateLinkModal();
+        this.loadLinks();
+        this.loadProject();
+        if (link.shortUrl) {
+          navigator.clipboard?.writeText(link.shortUrl).catch(() => {});
+        }
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.toast.error(this.linkErrorMessage(err, 'criar'));
+      }
+    });
+  }
+
   openEditLink(link: Link) { this.editingLink = link; this.linkModalOpen = true; }
   openDeleteLink(link: Link) { this.linkToDelete = link; this.deleteDialogOpen = true; }
 
   onSaveLink(data: { name: string; url: string; description: string; tagNames: string[] }) {
-    if (!this.projectId) return;
-    if (this.editingLink) {
-      this.api.updateLink(this.editingLink.id, data).subscribe({
-        next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); this.loadProject(); },
-        error: (err) => this.toast.error(this.linkErrorMessage(err, 'atualizar'))
-      });
-    } else {
-      this.api.createLink(this.projectId, data).subscribe({
-        next: () => { this.toast.success('Link adicionado!'); this.loadLinks(); this.loadProject(); },
-        error: (err) => this.toast.error(this.linkErrorMessage(err, 'criar'))
-      });
-    }
+    if (!this.projectId || !this.editingLink) return;
+    this.api.updateLink(this.editingLink.id, data).subscribe({
+      next: () => { this.toast.success('Link atualizado!'); this.loadLinks(); this.loadProject(); },
+      error: (err) => this.toast.error(this.linkErrorMessage(err, 'atualizar'))
+    });
   }
 
   onConfirmDeleteLink() {
