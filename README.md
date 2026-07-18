@@ -9,6 +9,7 @@ Faz parte do ecossistema **TeamLinks**:
 | Frontend (este) | `TeamLinks-frontend` | SPA Angular |
 | API | `TeamLinks` | Backend Spring Boot + PostgreSQL |
 | Encurtador | `TeamLinks-shortner` | Microsserviço de short links (`.NET`) |
+| Deploy | [`teamlinks-deploy`](https://github.com/buritizinhw/teamlinks-deploy) | Compose que sobe o stack completo |
 
 ---
 
@@ -166,7 +167,9 @@ Browser → Angular (4200)
 
 ## Serviços relacionados
 
-Ordem sugerida para o ambiente completo:
+Para subir o stack completo, use [`teamlinks-deploy`](https://github.com/buritizinhw/teamlinks-deploy).
+
+Ordem sugerida para desenvolvimento isolado:
 
 1. **API** (`TeamLinks`) — `docker compose up --build`
 2. **Encurtador** (`TeamLinks-shortner`) — mesma rede Docker
